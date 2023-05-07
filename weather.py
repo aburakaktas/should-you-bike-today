@@ -1,4 +1,6 @@
 import requests
+
+
 class Weather:
     _base_url = "https://api.openweathermap.org/"
 
@@ -31,13 +33,30 @@ class Weather:
         response = requests.get(
             f"{self._base_url}data/2.5/weather?lat={lat}&lon={lon}&appid={self._apikey}&units=metric")
         response_json = response.json()
+        self.location = response_json["name"] + ", " + response_json["sys"]["country"]
         self._degrees = response_json["main"]["temp"]
         self._wind_speed = response_json["wind"]["speed"]
         self._weather_type = response_json["weather"][0]["main"]
 
+    def get_full_json(self):
+        lat = self._coordinates['lat']
+        lon = self._coordinates['lon']
+        self._full_json = response = requests.get(
+            f"{self._base_url}data/2.5/weather?lat={lat}&lon={lon}&appid={self._apikey}&units=metric")
+        response_json = response.json()
+        return response_json
+
     def __str__(self):
         return f"Weather type: {self.weather_type}, Degrees: {self.degrees}, Wind speed: {self.wind_speed}"
 
+    @property
+    def location(self):
+        return self._location
+    
+    @location.setter
+    def location(self, value):
+        self._location = value
+    
     @property
     def degrees(self):
         return self._degrees
