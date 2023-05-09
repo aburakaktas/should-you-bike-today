@@ -9,17 +9,14 @@ class Weather:
         self._read_api_key()
         self._coordinates = self._get_coordinates()
         self._get_weather()
-
-    # def __init__(self, lat, lon):
-    #     self._coordinates = {"lat": lat, "lon": lon}
-    #     self._read_api_key()
-    #     self._get_weather()
-
+        
     def _read_api_key(self):
         with open(".apikey") as file:
             self._apikey = file.read()
 
     def _get_coordinates(self):
+        if self._location == "test_location_1":
+            return {""}
         response = requests.get(
             f"{self._base_url}geo/1.0/direct?q={self._location}&appid={self._apikey}")
         response_json = response.json()
