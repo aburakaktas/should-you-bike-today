@@ -7,16 +7,14 @@ class Weather:
     def __init__(self, location):
         self._location = location
         self._read_api_key()
-        self._coordinates = self._get_coordinates()
+        self.coordinates = self._get_coordinates()
         self._get_weather()
-        
+
     def _read_api_key(self):
         with open(".apikey") as file:
             self._apikey = file.read()
 
     def _get_coordinates(self):
-        if self._location == "test_location_1":
-            return {""}
         response = requests.get(
             f"{self._base_url}geo/1.0/direct?q={self._location}&appid={self._apikey}")
         response_json = response.json()
@@ -25,19 +23,20 @@ class Weather:
         return {"lat": lat, "lon": lon}
 
     def _get_weather(self):
-        lat = self._coordinates['lat']
-        lon = self._coordinates['lon']
+        lat = self.coordinates['lat']
+        lon = self.coordinates['lon']
         response = requests.get(
             f"{self._base_url}data/2.5/weather?lat={lat}&lon={lon}&appid={self._apikey}&units=metric")
         response_json = response.json()
-        self.location = response_json["name"] + ", " + response_json["sys"]["country"]
+        self.location = response_json["name"]
+        self.region = response_json["sys"]["country"]
         self._degrees = response_json["main"]["temp"]
         self._wind_speed = response_json["wind"]["speed"]
         self._weather_type = response_json["weather"][0]["main"]
 
     def get_full_json(self):
-        lat = self._coordinates['lat']
-        lon = self._coordinates['lon']
+        lat = self.coordinates['lat']
+        lon = self.coordinates['lon']
         self._full_json = response = requests.get(
             f"{self._base_url}data/2.5/weather?lat={lat}&lon={lon}&appid={self._apikey}&units=metric")
         response_json = response.json()
@@ -49,11 +48,19 @@ class Weather:
     @property
     def location(self):
         return self._location
-    
+
     @location.setter
     def location(self, value):
         self._location = value
-    
+
+    @property
+    def region(self):
+        return self._region
+
+    @region.setter
+    def region(self, value):
+        self._region = value
+
     @property
     def degrees(self):
         return self._degrees
@@ -65,3 +72,11 @@ class Weather:
     @property
     def weather_type(self):
         return self._weather_type
+    
+    @property
+    def coordinates(self):
+        return self._coordinates
+    
+    @coordinates.setter
+    def coordinates(self, value):
+        self._coordinates = value
