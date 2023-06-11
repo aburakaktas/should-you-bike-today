@@ -1,11 +1,3 @@
-# get user's location
-# get that location's weather data
-# get that locations's golden hour time
-# display golden hour expected in XX:XX mins (if less than 24 hours)
-# else display the next possible golden hour expected
-# the logic for golden hour is this: if it is sunny.
-
-
 from weather import Weather
 from astral.sun import sun, golden_hour
 from astral import LocationInfo, SunDirection
@@ -65,7 +57,7 @@ def find_time_zone(lat, lon):
     
 
 def extract_time(s):
-    pattern = " (.*)\:..\."
+    pattern = r" (.*)\:..\."
     result = re.findall(pattern, s)
     return result[0]
     
@@ -90,6 +82,7 @@ def main():
     # get sunset and golden hour times using the city info
     s = sun(city.observer, tzinfo=timeZone) 
     gh = golden_hour(city.observer, tzinfo=timeZone,direction=SunDirection.SETTING)
+    print(str(gh[0]))
     gh_start = extract_time(str(gh[0]))
     gh_end = extract_time(str(gh[1]))
     sunset = extract_time(str(s["sunset"]))
