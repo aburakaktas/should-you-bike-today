@@ -6,6 +6,17 @@ import re
 import argparse
 
 
+class color:
+        PURPLE = '\033[95m'
+        CYAN = '\033[96m'
+        DARKCYAN = '\033[36m'
+        BLUE = '\033[94m'
+        GREEN = '\033[92m'
+        YELLOW = '\033[93m'
+        RED = '\033[91m'
+        BOLD = '\033[1m'
+        UNDERLINE = '\033[4m'
+        END = '\033[0m'
 
 class Result:
     _main_result = None
@@ -28,7 +39,7 @@ class Result:
         self._wind_warning = value
 
 
-def decide_result(degrees, weather_type, wind_speed, location):
+def decide_result(degrees, weather_type, wind_speed, location, region):
     result = Result()
     if degrees >= 20:
         result.main_result = True
@@ -48,7 +59,7 @@ def decide_result(degrees, weather_type, wind_speed, location):
     else:
         result.wind_warning = False
 
-    return f"Is it cycling weather in {location}?\n- {'Yes!' if result.main_result else 'No.'} It is {degrees} degrees and weather type is: {weather_type}.\nShould I care about wind?\n- {'Yes.' if result.wind_warning else 'No!'} Wind speed is {wind_speed} km/h."
+    return f"\nIs it cycling weather in {location}, {region}?\n- {f'{color.GREEN}✅Yes!{color.END}' if result.main_result else f'{color.RED}❌No.{color.END}'} It is {color.CYAN}{degrees}{color.END} degrees and weather type is: {color.CYAN}{weather_type}{color.END}.\n\nIs the wind speed low enough?\n- {f'{color.RED}❌No.{color.END}' if result.wind_warning else f'{color.GREEN}✅Yes!{color.END}'} Wind speed is {color.CYAN}{wind_speed} km/h.{color.END}"
 
 
 def find_time_zone(lat, lon):
@@ -82,15 +93,14 @@ def main():
     # get sunset and golden hour times using the city info
     s = sun(city.observer, tzinfo=timeZone) 
     gh = golden_hour(city.observer, tzinfo=timeZone,direction=SunDirection.SETTING)
-    print(str(gh[0]))
     gh_start = extract_time(str(gh[0]))
     gh_end = extract_time(str(gh[1]))
     sunset = extract_time(str(s["sunset"]))
     
     
     # print the results
-    print(decide_result(weather.degrees, weather.weather_type, weather.wind_speed, weather.location))
-    print(f"Golden hour starts at {gh_start} and ends at {gh_end}. Also sunset is at {sunset}.")
-    
+    print(decide_result(weather.degrees, weather.weather_type, weather.wind_speed, weather.location, weather.region))
+    print(f"\nGolden hour starts at {color.YELLOW}{gh_start}{color.END} and ends at {color.YELLOW}{gh_end}{color.END}. Also sunset is at {color.YELLOW}{sunset}{color.END}.\n")
+        
 if __name__ == "__main__":
     main()
